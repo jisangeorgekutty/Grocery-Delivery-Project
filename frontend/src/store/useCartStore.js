@@ -26,11 +26,19 @@ export const useCartStore = create((set, get) => ({
         const cartData = { ...get().cartItems };
 
         if (cartData[productId]) {
-            delete cartData[productId];
-            set({ cartItems: cartData });
-            toast.success(`Product Removed from cart`);
+            const updatedQuantity = cartData[productId].quantity - 1;
+
+            if (updatedQuantity > 0) {
+                cartData[productId].quantity = updatedQuantity;
+                set({ cartItems: cartData });
+            } else {
+                delete cartData[productId];
+                set({ cartItems: cartData });
+                toast.success("Product Removed from cart");
+            }
         }
-    },
+    }
+    ,
 
     updateCartItem: (productId, quantity) => {
         const cartData = get().cartItems;
