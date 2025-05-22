@@ -7,12 +7,16 @@ import { useNavigate } from 'react-router-dom';
 
 function NavBar() {
     const [open, setOpen] = React.useState(false)
-    const { authUser } = useAuthStore();
+    const { authUser,loginUser } = useAuthStore();
     const navigate=useNavigate();
 
     const handleLogout = () => {
 
     }
+
+    const handleLoginClick = () => {
+    loginUser(true);
+  };
     return (
         <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
 
@@ -36,7 +40,7 @@ function NavBar() {
                     <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">3</button>
                 </div>
 
-                {authUser ? (<button onClick={()=>{navigate('/login'); }} className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full">
+                {!authUser ? (<button onClick={handleLoginClick} className="cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition text-white rounded-full">
                     Login
                 </button>):(
                 <div className='relative group'>
@@ -66,13 +70,13 @@ function NavBar() {
                     <button
                         onClick={() => {
                             setOpen(false);
-                            navigate('/login'); ;
+                            handleLoginClick;
                         }
                         } className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
                         Login
                     </button>
                 ) : (
-                    <button onClick={handleLogout()} className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
+                    <button onClick={handleLogout} className="cursor-pointer px-6 py-2 mt-2 bg-primary hover:bg-primary-dull transition text-white rounded-full text-sm">
                         LogOut
                     </button>
                 )}

@@ -4,13 +4,17 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import { Toaster } from 'react-hot-toast';
 import Footer from './components/Footer';
+import Login from './components/Login';
+import { useAuthStore } from './store/useAuthStore';
 
 
 function App() {
   const isSellerPath=useLocation().pathname.includes('seller');
+  const { setUserLogin } = useAuthStore();
   return (
     <div>
       {isSellerPath ? null : <NavBar />}
+      {setUserLogin ? <Login/>:null}
 
       <Toaster/>
       
