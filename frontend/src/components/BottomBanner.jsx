@@ -20,7 +20,7 @@ function BottomBanner() {
                                     {feature.description}
                                 </p>
 
-                                
+
                             </div>
                         </div>
                     ))}
