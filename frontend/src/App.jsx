@@ -6,6 +6,8 @@ import { Toaster } from 'react-hot-toast';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import { useAuthStore } from './store/useAuthStore';
+import AllProducts from './pages/AllProducts';
+import ProductCategory from './pages/ProductCategory';
 
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
       <div className={`${isSellerPath ? '': 'px-6 md:px-16 lg:px-24 xl:px-32'}`}>
         <Routes>
           <Route exact path="/" element={<Home />} />
+          <Route path="/all-products" element={<AllProducts/>} />
+          <Route path="/all-products/:category" element={<ProductCategory/>} />
         </Routes>
       </div>
     {!isSellerPath && <Footer/>}
