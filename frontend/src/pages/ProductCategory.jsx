@@ -8,9 +8,6 @@ function ProductCategory() {
 
     const { products,getProducts } = useProductStore();
     const { category } = useParams();
-    useEffect(() => {
-        getProducts();
-    }, [])
 
     const searchCategory = categories.find((item) => item.path.toLowerCase() === category);
 

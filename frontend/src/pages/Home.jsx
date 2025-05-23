@@ -4,10 +4,14 @@ import Categories from '../components/Categories'
 import BestSeller from '../components/BestSeller'
 import BottomBanner from '../components/BottomBanner'
 import NewsLetter from '../components/NewsLetter'
+import { useProductStore } from '../store/useProductStore'
 
 function Home() {
+  const {getProducts}=useProductStore();
 
-  useEffect
+  useEffect(()=>{
+          getProducts();
+      },[]);
   return (
     <div className='mt-10'>
         <MainBanner/>

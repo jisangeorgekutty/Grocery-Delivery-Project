@@ -8,6 +8,7 @@ import Login from './components/Login';
 import { useAuthStore } from './store/useAuthStore';
 import AllProducts from './pages/AllProducts';
 import ProductCategory from './pages/ProductCategory';
+import ProductDetails from './pages/ProductDetails';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route path="/all-products" element={<AllProducts/>} />
           <Route path="/all-products/:category" element={<ProductCategory/>} />
+          <Route path="/all-products/:category/:id" element={<ProductDetails/>}/>
         </Routes>
       </div>
     {!isSellerPath && <Footer/>}
