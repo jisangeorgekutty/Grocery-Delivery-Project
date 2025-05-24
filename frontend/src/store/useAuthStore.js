@@ -4,7 +4,7 @@ import { axiosInstance } from "../lib/axios.js";
 
 
 export const useAuthStore=create((set,get)=>({
-    authUser: null,
+    authUser: true,
     setUserLogin:false,
     isSigningUp: false,
     isLoggingIn: false,
