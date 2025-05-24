@@ -3,6 +3,9 @@ import { create } from 'zustand';
 
 export const useCartStore = create((set, get) => ({
     cartItems: {},
+    totalCount: 0,
+    totalAmount: 0,
+
 
     addToCart: (product) => {
         const cartData = get().cartItems;
@@ -53,4 +56,29 @@ export const useCartStore = create((set, get) => ({
             toast.success("Cart Updated");
         }
     },
+
+    getCartCount: () => {
+        const cartItems = get().cartItems;
+        let count = 0;
+
+        for (const item in cartItems) {
+            count += cartItems[item].quantity;
+        }
+        set({ totalCount: count });
+    },
+
+    getCartAmount: (products) => {
+        const cartItems = get().cartItems;
+        let amount = 0;
+        for (const itemId in cartItems) {
+            let itemInfo = products.find((product) => product._id === itemId);
+            if (cartItems[itemId].quantity > 0 && itemInfo) {
+                amount += itemInfo.offerPrice * cartItems[itemId].quantity;
+            }
+        }
+        console.log("Final amount calculated:", amount);
+        set({ totalAmount: Math.floor(amount * 100) / 100 });
+    }
+
+
 }));

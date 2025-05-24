@@ -9,6 +9,7 @@ import { useAuthStore } from './store/useAuthStore';
 import AllProducts from './pages/AllProducts';
 import ProductCategory from './pages/ProductCategory';
 import ProductDetails from './pages/ProductDetails';
+import Cart from './pages/Cart';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/all-products" element={<AllProducts/>} />
           <Route path="/all-products/:category" element={<ProductCategory/>} />
           <Route path="/all-products/:category/:id" element={<ProductDetails/>}/>
+          <Route path='/cart' element={<Cart/>}/>
         </Routes>
       </div>
     {!isSellerPath && <Footer/>}

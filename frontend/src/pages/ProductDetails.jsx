@@ -34,7 +34,7 @@ function ProductDetails() {
                 <Link to={"/"}>Home</Link> /
                 <Link to={"/all-products"}> Products</Link> /
                 <Link to={`/all-products/${product.category.toLowerCase()}`}> {product.category}</Link> /
-                <span className="text-indigo-500"> {product.name}</span>
+                <span className="text-primary"> {product.name}</span>
             </p>
 
             <div className="flex flex-col md:flex-row gap-16 mt-4">
@@ -57,7 +57,7 @@ function ProductDetails() {
 
                     <div className="flex items-center gap-0.5 mt-1">
                         {Array(5).fill('').map((_, i) => (
-                            <img src={i < 4 ? assets.star_icon : assets.star_dull_icon} alt="cart icon" />
+                            <img key={i} src={i < 4 ? assets.star_icon : assets.star_dull_icon} alt="cart icon" />
                         ))}
                         <p className="text-base ml-2">4</p>
                     </div>
@@ -79,7 +79,7 @@ function ProductDetails() {
                         <button onClick={() => addToCart(product)} className="w-full py-3.5 cursor-pointer font-medium bg-gray-100 text-gray-800/80 hover:bg-gray-200 transition" >
                             Add to Cart
                         </button>
-                        <button onClick={() => { addToCart(product); navigate("/cart") }} className="w-full py-3.5 cursor-pointer font-medium bg-indigo-500 text-white hover:bg-indigo-600 transition" >
+                        <button onClick={() => { addToCart(product); navigate("/cart") }} className="w-full py-3.5 cursor-pointer font-medium bg-primary text-white hover:bg-primary-dull transition" >
                             Buy now
                         </button>
                     </div>
