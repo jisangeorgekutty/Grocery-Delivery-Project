@@ -1,12 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore';
 
 function Login() {
     const {loginUser}=useAuthStore();
-    const [state, setState] = React.useState("login");
-    const [name, setName] = React.useState("");
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
+    const [state, setState] = useState("login");
+    const [name, setName] = useStateseState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     
 
