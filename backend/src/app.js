@@ -19,9 +19,7 @@ app.use(cors({origin: allowedOrigins, credentials:true}));
 
 
 
-app.use('/',(req,res)=>{
-    res.send("API is Working");
-});
+
 app.use('/api/auth',authRoutes);
 
 
