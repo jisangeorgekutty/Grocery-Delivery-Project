@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { connectDB } from './configs/db.js';
 import authRoutes from './routes/auth.route.js';
+import sellerAuthRoutes from './routes/seller.auth.route.js';
 
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cors({origin: allowedOrigins, credentials:true}));
 
 
 app.use('/api/auth',authRoutes);
+app.use('/api/seller',sellerAuthRoutes);
 
 
 
