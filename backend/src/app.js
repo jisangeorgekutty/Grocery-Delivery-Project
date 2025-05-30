@@ -6,7 +6,9 @@ import { connectDB } from './configs/db.js';
 import authRoutes from './routes/auth.route.js';
 import sellerAuthRoutes from './routes/seller.auth.route.js';
 import connectCloudinary from './configs/cloudinary.js';
-import productRoutes from './routes/product.route.js'
+import productRoutes from './routes/product.route.js';
+import cartRoutes from './routes/cart.route.js';
+import addressRoutes from './routes/address.route.js';
 
 
 dotenv.config();
@@ -26,6 +28,8 @@ app.use(cors({origin: allowedOrigins, credentials:true}));
 app.use('/api/auth',authRoutes);
 app.use('/api/seller',sellerAuthRoutes);
 app.use('/api/product',productRoutes);
+app.use('/api/cart',cartRoutes);
+app.use('/api/address',addressRoutes);
 
 
 
