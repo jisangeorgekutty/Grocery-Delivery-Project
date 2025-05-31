@@ -9,6 +9,7 @@ import connectCloudinary from './configs/cloudinary.js';
 import productRoutes from './routes/product.route.js';
 import cartRoutes from './routes/cart.route.js';
 import addressRoutes from './routes/address.route.js';
+import orderRoutes from './routes/order.route.js';
 
 
 dotenv.config();
@@ -24,12 +25,15 @@ app.use(cors({origin: allowedOrigins, credentials:true}));
 
 
 
-
+app.get('/',(req,res)=>{
+    res.send("Welcome to E-commerce API");
+});
 app.use('/api/auth',authRoutes);
 app.use('/api/seller',sellerAuthRoutes);
 app.use('/api/product',productRoutes);
 app.use('/api/cart',cartRoutes);
 app.use('/api/address',addressRoutes);
+app.use('/api/order',orderRoutes);
 
 
 
