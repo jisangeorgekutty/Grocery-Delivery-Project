@@ -7,11 +7,7 @@ import NewsLetter from '../components/NewsLetter'
 import { useProductStore } from '../store/useProductStore'
 
 function Home() {
-  const {getProducts}=useProductStore();
 
-  useEffect(()=>{
-          getProducts();
-      },[]);
   return (
     <div className='mt-10'>
         <MainBanner/>

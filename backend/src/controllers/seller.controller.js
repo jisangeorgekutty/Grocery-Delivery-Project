@@ -14,9 +14,9 @@ export const sellerLogin = (req, res) => {
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
-            res.status(200).json({ message: "Seller logged in successfully" });
+            res.status(200).json({success:true, message: "Seller logged in successfully" });
         } else {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({success:false, message: "Invalid credentials" });
         }
     } catch (error) {
         console.log("Error in the seller login:", error.message);

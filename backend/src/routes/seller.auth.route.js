@@ -8,6 +8,6 @@ router.post('/login', sellerLogin);
 
 router.get('/seller-auth', protectSellerRoute, sellerAuth);
 
-router.get('/logout', protectSellerRoute, sellerLogOut);
+router.get('/logout', sellerLogOut);
 
 export default router;

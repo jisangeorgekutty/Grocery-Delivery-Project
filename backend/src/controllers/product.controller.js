@@ -18,27 +18,27 @@ export const addProduct = async (req, res) => {
         )
 
         await Product.create({ ...productData, image: imagesUrl });
-        res.status(201).json({ message: "Product added successfully" });
+        res.status(201).json({ success: true, message: "Product added successfully" });
 
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({success:false, message: "Internal Server Error" });
     }
 }
 
 export const productList = async (req, res) => {
     try {
         const products = await Product.find({});
-        res.status(200).json(products);
+        res.status(200).json({ success: true, products });
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 
 export const productById = async (req, res) => {
     try {
-        const {id}=req.body;
+        const { id } = req.body;
         const product = await Product.findById(id);
         res.status(200).json(product);
     } catch (error) {
@@ -47,13 +47,13 @@ export const productById = async (req, res) => {
     }
 }
 
-export const changeStock=async(req,res)=>{
-    try{
-        const {id,inStock}=req.body;
-        await Product.findByIdAndUpdate(id,{inStock});
-        res.status(200).json({ message: "Stock updated successfully" });
-    }catch(error){
+export const changeStock = async (req, res) => {
+    try {
+        const { id, inStock } = req.body;
+        await Product.findByIdAndUpdate(id, { inStock });
+        res.status(200).json({ success: true, message: "Stock updated successfully" });
+    } catch (error) {
         console.log(error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }

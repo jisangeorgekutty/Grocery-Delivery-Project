@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import { Toaster } from 'react-hot-toast';
 import Footer from './components/Footer';
 import Login from './components/Login';
-import { useAuthStore } from './store/useAuthStore';
+import { useAuthStore } from './store/useAuthStore.js';
 import AllProducts from './pages/AllProducts';
 import ProductCategory from './pages/ProductCategory';
 import ProductDetails from './pages/ProductDetails';
@@ -17,11 +17,26 @@ import SellerDashboard from './pages/seller/SellerDashboard';
 import AddProduct from './pages/seller/AddProduct';
 import ProductList from './pages/seller/ProductList';
 import Orders from './pages/seller/Orders';
+import { useEffect } from 'react';
+import { useProductStore } from './store/useProductStore.js';
 
 
 function App() {
   const isSellerPath = useLocation().pathname.includes('seller');
-  const { setUserLogin, isSeller } = useAuthStore();
+  const { setUserLogin, isSeller, sellerAuth } = useAuthStore();
+  const {getAllProducts}=useProductStore();
+
+  useEffect(() => {
+    if (isSellerPath) {
+      sellerAuth();
+    }
+  }, [isSellerPath]);
+
+  useEffect(()=>{
+    getAllProducts();
+  },[]);
+
+
   return (
     <div className='text-default min-h-screen text-gray-700 bg-white'>
       {isSellerPath ? null : <NavBar />}
@@ -39,9 +54,9 @@ function App() {
           <Route path='/add-address' element={<AddAddress />} />
           <Route path='/my-orders' element={<MyOrders />} />
           <Route path='/seller' element={isSeller ? <SellerDashboard /> : <SellerLogin />}>
-            <Route index element={isSeller ? <AddProduct/> : null}/>
-            <Route path='product-list' element={<ProductList/>}/>
-            <Route path='orders' element={<Orders/>}/>
+            <Route index element={isSeller ? <AddProduct /> : null} />
+            <Route path='product-list' element={<ProductList />} />
+            <Route path='orders' element={<Orders />} />
           </Route>
         </Routes>
       </div>

@@ -1,17 +1,30 @@
 import React from 'react'
 import { assets } from '../../assets/assets';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useProductStore } from '../../store/useProductStore';
 
 function SellerDashboard() {
-    const { isSeller } = useAuthStore();
-    const { getProducts, products } = useProductStore();
+    const navigate=useNavigate();
+    const { isSeller,sellerLogout,sellerAuth } = useAuthStore();
+    const { products } = useProductStore();
+
+    // useEffect(() => {
+    //     getProducts();
+    // }, [products])
 
     useEffect(() => {
-        getProducts();
-    }, [products])
+        sellerAuth();
+    },[])
+
+    const handleLogOut=()=>{
+        if(isSeller){
+        sellerLogout();
+        navigate('/');
+        }
+    }
+
 
     const sidebarLinks = [
         { name: "Add Product", path: "/seller", icon: assets.add_icon },
@@ -19,8 +32,6 @@ function SellerDashboard() {
         { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
     ];
 
-    const handleLogOut = () => {
-    }
 
     return (
         <>
