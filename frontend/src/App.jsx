@@ -23,8 +23,8 @@ import { useProductStore } from './store/useProductStore.js';
 
 function App() {
   const isSellerPath = useLocation().pathname.includes('seller');
-  const { setUserLogin, isSeller, sellerAuth } = useAuthStore();
-  const {getAllProducts}=useProductStore();
+  const { setUserLoginWindow, isSeller, sellerAuth, checkAuth } = useAuthStore();
+  const { getAllProducts } = useProductStore();
 
   useEffect(() => {
     if (isSellerPath) {
@@ -32,15 +32,19 @@ function App() {
     }
   }, [isSellerPath]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getAllProducts();
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth])
 
 
   return (
     <div className='text-default min-h-screen text-gray-700 bg-white'>
       {isSellerPath ? null : <NavBar />}
-      {setUserLogin ? <Login /> : null}
+      {setUserLoginWindow ? <Login /> : null}
 
       <Toaster />
 

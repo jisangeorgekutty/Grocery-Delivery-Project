@@ -1,13 +1,14 @@
 import toast from "react-hot-toast";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
-import { data } from "react-router-dom";
+
+
 
 
 export const useAuthStore = create((set, get) => ({
     authUser: null,
     isSeller: null,
-    setUserLogin: false,
+    setUserLoginWindow: false,
     isSigningUp: false,
     isLoggingIn: false,
     isSellerLoggingIn: false,
@@ -15,8 +16,8 @@ export const useAuthStore = create((set, get) => ({
     isCheckingAuth: true,
     isCheckingAuthSeller: true,
 
-    loginUser: async (value) => {
-        set({ setUserLogin: value });
+    loginUserWindow: async (value) => {
+        set({ setUserLoginWindow: value });
     },
     sellerAuth: async () => {
         try {
@@ -24,11 +25,11 @@ export const useAuthStore = create((set, get) => ({
             if (res.data.success) {
                 set({ isSeller: true });
             } else {
-                set({ isSeller: false });
+                set({ isSeller: null });
             }
         } catch (error) {
             console.error("Error in sellerAuth:", error.message);
-            set({ isSeller: false });
+            set({ isSeller: null });
         } finally {
             set({ isCheckingAuthSeller: false });
         }
@@ -38,7 +39,7 @@ export const useAuthStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post("/seller/login", data);
             console.log(res.data.success)
-            set({ isSeller:res.data.success });
+            set({ isSeller: res.data.success });
             toast.success("Seller Logged In Successfully");
             get().sellerAuth();
         } catch (error) {
@@ -50,12 +51,67 @@ export const useAuthStore = create((set, get) => ({
     sellerLogout: async () => {
         try {
             await axiosInstance.get("/seller/logout");
-            set({ isSeller: false });
+            set({ isSeller: null });
             toast.success("Seller Logged Out Successfully");
         } catch (error) {
             toast.error(error.response.data.message);
         }
     },
+    checkAuth: async () => {
+        try {
+            const res = await axiosInstance.get("/auth/checkauth");
+            if (res.data.success) {
+                set({ authUser: res.data.user });
+            } else {
+                set({ authUser: null });
+            }
+        } catch (error) {
+            console.error("Error in userAuth:", error.message);
+            set({ authUser: null });
+        } finally {
+            set({ isCheckingAuth: false });
+        }
+    },
+    userLogin: async (email, password) => {
+        set({ isLoggingIn: true });
+        try {
+            const res = await axiosInstance.post('/auth/login', { email, password });
+            set({ authUser: res.data })
+            set({ setUserLoginWindow: false });
+            toast.success("Logged in successfully");
+            get().checkAuth();
+        } catch (error) {
+            toast.error(error.response.data.message);
+            set({ setUserLoginWindow: true });
+        } finally {
+            set({ isLoggingIn: false });
+        }
+    },
+    userSignup: async (name, email, password) => {
+        set({ isSigningUp: true });
+        try {
+            const res = await axiosInstance.post('/auth/signup', { name, email, password });
+            set({ authUser: res.data })
+            set({ setUserLoginWindow: false });
+            toast.success("Account created successfully");
+            get().checkAuth();
+        } catch (error) {
+            toast.error(error.response.data.message);
+            set({ setUserLoginWindow: true });
+        } finally {
+            set({ isSigningUp: false });
+        }
+
+    },
+    userLogOut: async () => {
+        try {
+            await axiosInstance.post("/auth/logout");
+            set({ authUser: null });
+            toast.success("Seller Logged Out Successfully");
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
 
 
 }))

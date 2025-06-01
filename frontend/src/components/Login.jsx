@@ -1,18 +1,37 @@
 import React, { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore';
+import { useEffect } from 'react';
 
 function Login() {
-    const {loginUser}=useAuthStore();
+    const { userLogin, userSignup, authUser, loginUserWindow } = useAuthStore();
     const [state, setState] = useState("login");
-    const [name, setName] = useStateseState("");
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    
+    const onSubmitHandler = (e) => {
+        e.preventDefault();
+        if (state === "login") {
+            userLogin(email, password);
+        }
+        else {
+            userSignup(name, email, password);
+        }
+    }
+
+    useEffect(() => {
+        if (authUser) {
+            navigate("/");
+        }
+    }, [authUser]);
+
+    const handleOnClick = () => {
+        loginUserWindow(false);
+    }
 
     return (
-        <div onClick={()=>loginUser(false)} className='fixed top-0 bottom-0 left-0 right-0 z-30 flex items-center text-sm text-gray-600 bg-black/50'>
-            <form onClick={(e) => e.stopPropagation()} className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white">
+        <div onClick={handleOnClick} className='fixed top-0 bottom-0 left-0 right-0 z-30 flex items-center text-sm text-gray-600 bg-black/50'>
+            <form onSubmit={onSubmitHandler} onClick={(e) => e.stopPropagation()} className="flex flex-col gap-4 m-auto items-start p-8 py-12 w-80 sm:w-[352px] rounded-lg shadow-xl border border-gray-200 bg-white">
                 <p className="text-2xl font-medium m-auto">
                     <span className="text-primary">User</span> {state === "login" ? "Login" : "Sign Up"}
                 </p>

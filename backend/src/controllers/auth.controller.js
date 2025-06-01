@@ -29,7 +29,7 @@ export const signUp = async (req, res) => {
         })
 
         if (newUser) {
-             generateToken(newUser._id, res);
+            generateToken(newUser._id, res);
             await newUser.save();  // save user in db
             res.status(201).json({
                 _id: newUser._id,
@@ -85,7 +85,7 @@ export const logOut = (req, res) => {
 
 export const checkAuth = (req, res) => {
     try {
-        res.status(200).json(req.user);
+        res.status(200).json({ success: true, user: req.user });
     } catch (error) {
         console.log("Error in the checkAuth:", error.message);
         res.status(500).json({ message: "Internal Server Error" });

@@ -43,7 +43,6 @@ export const useProductStore = create((set, get) => ({
             toast.error(
                 error?.response?.data?.message || error.message || "Something went wrong"
             );
-            console.error("Add product error:", error);
         }
     },
 
