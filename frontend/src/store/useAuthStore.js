@@ -1,6 +1,7 @@
 import toast from "react-hot-toast";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
+import { useCartStore } from "./useCartStore.js";
 
 
 
@@ -62,12 +63,14 @@ export const useAuthStore = create((set, get) => ({
             const res = await axiosInstance.get("/auth/checkauth");
             if (res.data.success) {
                 set({ authUser: res.data.user });
+                const { setCartItems } = useCartStore.getState();
+                setCartItems(res.data.user.cartItems)
             } else {
                 set({ authUser: null });
             }
         } catch (error) {
-            console.error("Error in userAuth:", error.message);
             set({ authUser: null });
+            console.error("Error in userAuth:", error.message);
         } finally {
             set({ isCheckingAuth: false });
         }

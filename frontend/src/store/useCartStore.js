@@ -1,5 +1,7 @@
 import toast from 'react-hot-toast';
 import { create } from 'zustand';
+import { useAuthStore } from './useAuthStore';
+import { axiosInstance } from '../lib/axios';
 
 export const useCartStore = create((set, get) => ({
     cartItems: {},
@@ -7,7 +9,12 @@ export const useCartStore = create((set, get) => ({
     totalAmount: 0,
 
 
-    addToCart: (product) => {
+    setCartItems: (items) => {
+        set({ cartItems: items || {} });
+        get().getCartCount();
+    },
+
+    addToCart: async (product) => {
         const cartData = get().cartItems;
         const existingItem = cartData[product._id];
 
@@ -19,13 +26,21 @@ export const useCartStore = create((set, get) => ({
         };
 
         set({ cartItems: updatedCart });
+        console.log("UPDATED CART ", updatedCart);
 
         if (!existingItem) {
             toast.success(`Added to cart`);
         }
+
+
+        const { authUser } = useAuthStore.getState();
+        console.log("user", authUser);
+        if (authUser?._id) {
+            await get().syncCartToDB(authUser._id, updatedCart);
+        }
     },
 
-    removeFromCart: (productId) => {
+    removeFromCart: async (productId) => {
         const cartData = { ...get().cartItems };
 
         if (cartData[productId]) {
@@ -33,17 +48,21 @@ export const useCartStore = create((set, get) => ({
 
             if (updatedQuantity > 0) {
                 cartData[productId].quantity = updatedQuantity;
-                set({ cartItems: cartData });
             } else {
                 delete cartData[productId];
-                set({ cartItems: cartData });
                 toast.success("Product Removed from cart");
+            }
+            set({ cartItems: cartData });
+
+            const { authUser } = useAuthStore.getState();
+            if (authUser?._id) {
+                await get().syncCartToDB(authUser._id, cartData);
             }
         }
     }
     ,
 
-    updateCartItem: (productId, quantity) => {
+    updateCartItem: async (productId, quantity) => {
         const cartData = get().cartItems;
         const existingItem = cartData[productId];
 
@@ -54,6 +73,11 @@ export const useCartStore = create((set, get) => ({
             };
             set({ cartItems: updatedCart });
             toast.success("Cart Updated");
+
+            const { authUser } = useAuthStore.getState();
+            if (authUser?._id) {
+                await get().syncCartToDB(authUser._id, updatedCart);
+            }
         }
     },
 
@@ -78,7 +102,14 @@ export const useCartStore = create((set, get) => ({
         }
         console.log("Final amount calculated:", amount);
         set({ totalAmount: Math.floor(amount * 100) / 100 });
+    },
+
+    syncCartToDB: async (userId, cartItems) => {
+        try {
+            console.log("user" + userId + "cartitms" + cartItems);
+            await axiosInstance.post("/cart/update", { userId, cartItems });
+        } catch (error) {
+            console.error("Cart sync failed:", error.message);
+        }
     }
-
-
 }));

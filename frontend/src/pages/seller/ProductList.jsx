@@ -1,12 +1,16 @@
 import React from 'react'
 import { useProductStore } from '../../store/useProductStore';
+import { useEffect } from 'react';
 
 function ProductList() {
 
 
-    const { products,toggleStock } = useProductStore();
+    const { products,toggleStock,getAllProducts } = useProductStore();
+    useEffect(()=>{
+        getAllProducts();
+    },[products]);
 
-    console.log(products)
+    console.log(products);
 
     return (
         <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll flex flex-col justify-between">

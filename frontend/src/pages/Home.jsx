@@ -7,7 +7,7 @@ import NewsLetter from '../components/NewsLetter'
 import { useProductStore } from '../store/useProductStore'
 
 function Home() {
-
+  
   return (
     <div className='mt-10'>
         <MainBanner/>

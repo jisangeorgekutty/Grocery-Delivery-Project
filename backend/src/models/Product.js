@@ -5,7 +5,7 @@ const productSchema=new mongoose.Schema({
         type:String, 
         required:true
     },
-    decription:{
+    description:{
         type:Array, 
         required:true, 
     },
@@ -22,7 +22,7 @@ const productSchema=new mongoose.Schema({
         required:true
     },
     category:{
-        type:Array,
+        type:String,
         required:true
     },
     inStock:{

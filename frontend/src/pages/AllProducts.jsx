@@ -4,11 +4,11 @@ import { use } from 'react';
 import ProductCard from '../components/ProductCard';
 
 function AllProducts() {
-    const {products,searchQueryData,getProducts}=useProductStore();
+    const {products,searchQueryData}=useProductStore();
     const [filteredProducts, setFilteredProducts] = useState([]);
 
     useEffect(()=>{
-        getProducts();
+        
     },[])
 
     useEffect(()=>{
