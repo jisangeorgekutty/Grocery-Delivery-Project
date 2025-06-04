@@ -26,37 +26,36 @@ export const placeOrderCOD = async (req, res) => {
             paymentType: "COD",
         });
 
-        res.status(200).json({ message: "Order Placed Successfully" });
+        res.status(200).json({ success: true, message: "Order Placed Successfully" });
 
     } catch (error) {
         console.log("Error in placing order:", error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 
 export const getUserOrders = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.query;
         const orders = await Order.find({
             userId,
             $or: [{ paymentType: "COD" }, { isPaid: true }]
         }).populate("items.product address").sort({ createdAt: -1 });
-        res.status(200).json(orders);
+        res.status(200).json({ success: true, orders });
     } catch (error) {
-        onsole.log(error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        console.log(error.message);
+        res.status(500).json({success:false, message: "Internal Server Error" });
     }
 }
 
 export const getAllOrders = async (req, res) => {
     try {
-        
         const orders = await Order.find({
             $or: [{ paymentType: "COD" }, { isPaid: true }]
         }).populate("items.product address").sort({ createdAt: -1 });
-        res.status(200).json(orders);
+        res.status(200).json({ success: true, orders });
     } catch (error) {
-        onsole.log(error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }

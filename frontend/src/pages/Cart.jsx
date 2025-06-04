@@ -3,34 +3,75 @@ import { useCartStore } from '../store/useCartStore';
 import { useProductStore } from '../store/useProductStore';
 import { assets, dummyAddress } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import { useAddressStore } from '../store/useAddressStore';
+import { useAuthStore } from '../store/useAuthStore';
+import toast from 'react-hot-toast';
+import { useOrderStore } from '../store/useOrderStore';
 
 
 function Cart() {
-    const { cartItems, removeFromCart, updateCartItem, totalCount, getCartAmount, totalAmount } = useCartStore();
+    const { cartItems, removeFromCart, updateCartItem, setCartItems, totalCount, getCartAmount, totalAmount,syncCartToDB } = useCartStore();
     const { products } = useProductStore();
+    const { getUserAddress, addressList } = useAddressStore();
+    const { authUser } = useAuthStore();
     const navigate = useNavigate();
     const [cartArray, setCartArray] = useState([]);
-    const [addresses, setAddresses] = useState(dummyAddress);
-    const [showAddress, setShowAddress] = useState(dummyAddress[0]);
-    const [selectedAddress, setSelectedAddress] = useState(dummyAddress[0]);
+    const [addresses, setAddresses] = useState([]);
+    const [showAddress, setShowAddress] = useState(false);
+    const [selectedAddress, setSelectedAddress] = useState(null);
     const [paymentOption, setPaymentOption] = useState("COD");
+    const { userPlaceOrderCod } = useOrderStore();
 
     console.log("cartItems:", cartItems);
 
-    const placeOrder = async () => {
-
-    }
-
     useEffect(() => {
-        if (Object.keys(cartItems).length  > 0 && products.length > 0) {
+        if (Object.keys(cartItems).length > 0 && products.length > 0) {
             getCartAmount(products);
         }
-    }, [cartItems,products]);
+    }, [cartItems, products]);
 
     useEffect(() => {
         const itemsArray = Object.values(cartItems);
         setCartArray(itemsArray);
     }, [cartItems]);
+
+    useEffect(() => {
+        if (authUser) {
+            getUserAddress({ userId: authUser._id });
+        }
+    }, [authUser]);
+
+    useEffect(() => {
+        if (addressList.length > 0) {
+            setAddresses(addressList);
+            setSelectedAddress(addressList[0]);
+        }
+    }, [addressList]);
+
+    const placeOrder = async () => {
+        try {
+            if (!selectedAddress) {
+                return toast.error("Please Select An Address");
+            }
+
+            if (paymentOption === "COD") {
+                const result = await userPlaceOrderCod({
+                    userId: authUser._id,
+                    items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+                    address: selectedAddress._id
+                })
+                if (result?.success) {
+                    setCartItems({});
+                    await syncCartToDB(authUser._id, {});
+                    navigate("/my-orders");
+                }
+            }
+
+
+        } catch (error) {
+            toast.error("Failed to place order");
+        }
+    }
 
 
 
@@ -59,7 +100,7 @@ function Cart() {
                                     <p>Weight: <span>{product.weight || "N/A"}</span></p>
                                     <div className='flex items-center'>
                                         <p>Qty:</p>
-                                        <select onChange={(e)=>updateCartItem(product._id,Number(e.target.value))} value={product.quantity} className='outline-none'>
+                                        <select onChange={(e) => updateCartItem(product._id, Number(e.target.value))} value={product.quantity} className='outline-none'>
                                             {Array(cartItems[product._id] > 9 ? cartItems[product._id] : 9).fill('').map((_, index) => (
                                                 <option key={index} value={index + 1}>{index + 1}</option>
                                             ))}
