@@ -20,7 +20,7 @@ function Cart() {
     const [showAddress, setShowAddress] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [paymentOption, setPaymentOption] = useState("COD");
-    const { userPlaceOrderCod } = useOrderStore();
+    const { userPlaceOrderCod,userPlaceOrderStripe } = useOrderStore();
 
     console.log("cartItems:", cartItems);
 
@@ -64,6 +64,17 @@ function Cart() {
                     setCartItems({});
                     await syncCartToDB(authUser._id, {});
                     navigate("/my-orders");
+                }
+            }else{
+                const result = await userPlaceOrderStripe({
+                    userId: authUser._id,
+                    items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+                    address: selectedAddress._id
+                })
+                if (result?.success) {
+                    window.location.replace(result.url);
+                }else{
+                    toast.error(result.message);
                 }
             }
 

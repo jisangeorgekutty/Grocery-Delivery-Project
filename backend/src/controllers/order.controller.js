@@ -1,12 +1,14 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import stripe from 'stripe';
+
 
 export const placeOrderCOD = async (req, res) => {
     try {
         const { userId, items, address } = req.body;
 
         if (!address || items.length === 0) {
-            return res.status(400).json({ message: "Inavlaid Data" });
+            return res.status(400).json({ message: "Invalid Data" });
         }
 
         // calculate total amount of order
@@ -34,6 +36,86 @@ export const placeOrderCOD = async (req, res) => {
     }
 }
 
+export const placeOrderStripe = async (req, res) => {
+    try {
+        const { userId, items, address } = req.body;
+        const { origin } = req.headers;
+        const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
+        if (!process.env.STRIPE_SECRET_KEY) {
+            console.error(" STRIPE_SECERT_KEY is missing in .env");
+            return res.status(500).json({ success: false, message: "Stripe config error" });
+        }
+
+       console.log(" Incoming Order Request", { userId, items, address });
+
+        if (!address || items.length === 0) {
+            return res.status(400).json({ message: "Invalid Data" });
+        }
+
+        let productData = [];
+        // calculate total amount of order
+        let amount = await items.reduce(async (acc, item) => {
+            const product = await Product.findById(item.product);
+            productData.push({
+                name: product.name,
+                price: product.offerPrice,
+                quantity: item.quantity,
+            });
+            return (await acc) + product.offerPrice * item.quantity;
+        }, 0)
+
+        // calculate amount after  2% tax
+        amount += Math.floor(amount * 0.02);
+
+        const order = await Order.create({
+            userId,
+            items,
+            amount,
+            address,
+            paymentType: "Online", 
+        });
+
+        console.log("✅ Order Created:", order._id);
+
+
+        const line_items = productData.map((item) => {
+            const priceWithTax = item.price + item.price * 0.02;
+            return {
+                price_data: {
+                    currency: "usd",
+                    product_data: {
+                        name: item.name,
+                    },
+                    unit_amount: Math.floor(priceWithTax * 100)
+                },
+                quantity: item.quantity,
+
+            }
+        })
+
+        const session = await stripeInstance.checkout.sessions.create({
+            line_items,
+            mode: "payment",
+            success_url: `${origin}/loader?next=my-orders`,
+            cancel_url: `${origin}/cart`,
+            metadata: {
+                orderId: order._id.toString(),
+                userId,
+            }
+        })
+        console.log(" Stripe Session Created:", session.id);
+
+        res.status(200).json({ success: true, url: session.url, message: "Online Playment CheckOut" });
+
+    } catch (error) {
+        console.log("Error in placing order:", error.message);
+        console.trace();
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+}
+
+
+
 export const getUserOrders = async (req, res) => {
     try {
         const { userId } = req.query;
@@ -44,7 +126,7 @@ export const getUserOrders = async (req, res) => {
         res.status(200).json({ success: true, orders });
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({success:false, message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 
