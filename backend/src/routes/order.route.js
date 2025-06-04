@@ -10,6 +10,6 @@ router.get('/user',protectRoute,getUserOrders);
 
 router.get('/seller',protectRoute,getAllOrders);
 
-router.post('/online',protectRoute,placeOrderStripe);
+router.post('/stripe',protectRoute,placeOrderStripe);
 
 export default router;

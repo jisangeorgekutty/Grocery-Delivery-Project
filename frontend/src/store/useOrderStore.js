@@ -20,7 +20,7 @@ export const useOrderStore = create((set, get) => ({
 
     userPlaceOrderStripe: async ({ userId, items, address }) => {
         try {
-            const res = await axiosInstance.post('/order/online', { userId, items, address })
+            const res = await axiosInstance.post('/order/stripe', { userId, items, address })
             if (res.data.success) {
                 toast.success(res.data.message);
                 console.log("Resposnse  url"+res.data.url)
