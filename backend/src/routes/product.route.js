@@ -10,7 +10,7 @@ router.post('/add',upload.array(["images"]),protectSellerRoute,addProduct);
 
 router.get('/list',productList);
 
-router.get('/id',productById);
+router.get('/:id',productById);
 
 router.post('/stock',protectSellerRoute,changeStock);
 

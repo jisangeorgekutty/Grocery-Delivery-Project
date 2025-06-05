@@ -38,7 +38,7 @@ export const productList = async (req, res) => {
 
 export const productById = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         const product = await Product.findById(id);
         res.status(200).json(product);
     } catch (error) {
