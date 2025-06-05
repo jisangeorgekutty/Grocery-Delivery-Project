@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { dummyOrders } from '../assets/assets';
 import { useOrderStore } from '../store/useOrderStore';
 import { useAuthStore } from '../store/useAuthStore';
 

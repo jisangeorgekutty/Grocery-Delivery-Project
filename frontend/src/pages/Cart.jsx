@@ -10,7 +10,7 @@ import { useOrderStore } from '../store/useOrderStore';
 
 
 function Cart() {
-    const { cartItems, removeFromCart, updateCartItem, setCartItems, totalCount, getCartAmount, totalAmount,syncCartToDB } = useCartStore();
+    const { cartItems, removeFromCart,getCartCount, updateCartItem, setCartItems, totalCount, getCartAmount, totalAmount,syncCartToDB } = useCartStore();
     const { products } = useProductStore();
     const { getUserAddress, addressList } = useAddressStore();
     const { authUser } = useAuthStore();
@@ -48,6 +48,10 @@ function Cart() {
         }
     }, [addressList]);
 
+    useEffect(()=>{
+        getCartCount();
+    },[cartItems]);
+
     const placeOrder = async () => {
         try {
             if (!selectedAddress) {
@@ -81,6 +85,7 @@ function Cart() {
 
         } catch (error) {
             toast.error("Failed to place order");
+            console.error("Order Error:", error);
         }
     }
 
@@ -145,7 +150,7 @@ function Cart() {
                         <button onClick={() => setShowAddress(!showAddress)} className="text-primary hover:underline cursor-pointer">
                             Change
                         </button>
-                        {!showAddress && (
+                        {showAddress && (
                             <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
                                 {addresses.map((address, index) => (
                                     <p key={index} onClick={() => { setSelectedAddress(address); setShowAddress(false) }} className="text-gray-500 p-2 hover:bg-gray-100">

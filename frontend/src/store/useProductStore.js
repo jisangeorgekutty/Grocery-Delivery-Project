@@ -1,7 +1,6 @@
 import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
-import { data } from 'react-router-dom';
 
 
 export const useProductStore = create((set, get) => ({

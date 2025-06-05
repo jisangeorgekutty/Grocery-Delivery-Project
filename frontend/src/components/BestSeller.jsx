@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import ProductCard from './ProductCard'
-import { dummyProducts } from '../assets/assets';
 import { useProductStore } from '../store/useProductStore';
 
 function BestSeller() {

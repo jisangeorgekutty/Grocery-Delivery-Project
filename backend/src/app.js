@@ -18,7 +18,7 @@ const PORT = process.env.PORT;
 const app = express();
 const allowedOrigins = ['http://localhost:5173']
 
-app.post('/stripe', express.raw({ type: "application/json" }, stripeWebHooks))
+app.post('/stripe', express.raw({ type: "application/json" }), stripeWebHooks);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -37,6 +37,7 @@ app.use('/api/product', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/address', addressRoutes);
 app.use('/api/order', orderRoutes);
+
 
 
 

@@ -42,12 +42,6 @@ export const placeOrderStripe = async (req, res) => {
         const { userId, items, address } = req.body;
         const { origin } = req.headers;
         const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-        if (!process.env.STRIPE_SECRET_KEY) {
-            console.error(" STRIPE_SECERT_KEY is missing in .env");
-            return res.status(500).json({ success: false, message: "Stripe config error" });
-        }
-
-        console.log(" Incoming Order Request", { userId, items, address });
 
         if (!address || items.length === 0) {
             return res.status(400).json({ message: "Invalid Data" });
@@ -76,8 +70,6 @@ export const placeOrderStripe = async (req, res) => {
             paymentType: "Online",
         });
 
-        console.log("✅ Order Created:", order._id);
-
 
         const line_items = productData.map((item) => {
             const priceWithTax = item.price + item.price * 0.02;
@@ -104,13 +96,11 @@ export const placeOrderStripe = async (req, res) => {
                 userId,
             }
         })
-        console.log(" Stripe Session Created:", session.id);
 
         res.status(200).json({ success: true, url: session.url, message: "Online Playment CheckOut" });
 
     } catch (error) {
         console.log("Error in placing order:", error.message);
-        console.trace();
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
@@ -157,25 +147,37 @@ export const stripeWebHooks = async (req, res) => {
         );
     } catch (error) {
         res.status(400).send(`WebHook Error :${error.message}`);
+        return;
     }
 
     // handle event
 
     switch (event.type) {
         case "payment_intent.succeeded": {
+            console.log(" Payment succeeded");
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
 
             const session = await stripeInstance.checkout.sessions.list({
                 payment_intent: paymentIntentId,
             });
+            if (!session.data.length) {
+                console.error("No Stripe session found for payment_intent:", paymentIntentId);
+                return res.status(400).json({ message: "No Stripe session found" });
+            }
 
+            console.log("Webhook session metadata:", session.data[0].metadata);
             const { orderId, userId } = session.data[0].metadata;
+            if (!orderId || !userId) {
+                console.error("orderId or userId missing in session metadata");
+                return res.status(400).json({ message: "Missing orderId or userId in metadata" });
+            }
             await Order.findByIdAndUpdate(orderId, { isPaid: true });
             await User.findByIdAndUpdate(userId, { cartItems: {} });
             break;
         }
         case "payment_intent.payment_failed": {
+            console.log(" Payment failed");
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
 
@@ -185,6 +187,12 @@ export const stripeWebHooks = async (req, res) => {
 
             const { orderId } = session.data[0].metadata;
 
+
+            if (!orderId) {
+                console.error("orderId missing in metadata for failed payment");
+                return res.status(400).json({ message: "Missing orderId in metadata" });
+            }
+
             await Order.findByIdAndDelete(orderId);
             break;
         }
@@ -192,6 +200,6 @@ export const stripeWebHooks = async (req, res) => {
             console.error(`Unhandled event type ${event.type}`);
             break;
     }
-    res.json({received:true});
+    res.json({ received: true });
 
 }
